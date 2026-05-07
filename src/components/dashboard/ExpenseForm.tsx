@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CalendarIcon, PlusCircle } from "lucide-react";
+import { CalendarIcon, PlusCircle, Banknote, Tag, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function ExpenseForm({ onAdd }: { onAdd: (e: Expense) => void }) {
       id: Math.random().toString(36).slice(2),
       amount: num,
       category,
-      date: date.toISOString(),
+      date: date.toISOString().slice(0, 10),
       description: description || category,
     });
     toast.success("Expense added");
@@ -46,88 +46,145 @@ export function ExpenseForm({ onAdd }: { onAdd: (e: Expense) => void }) {
   };
 
   return (
-    <div className="max-w-xl mx-auto rounded-2xl bg-card border border-border shadow-soft p-6 md:p-8 animate-slide-up">
-      <div className="mb-6">
-        <h2 className="font-display text-xl font-bold text-foreground">Add Expense</h2>
-        <p className="text-sm text-muted-foreground">Log a new transaction in seconds.</p>
-      </div>
-      <form onSubmit={submit} className="space-y-5">
-        <div className="space-y-2">
-          <Label htmlFor="amount">Amount</Label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
-              $
-            </span>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="pl-7 h-11 rounded-xl"
-            />
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95">
+      <div className="max-w-2xl mx-auto px-4 py-8 md:py-12">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div className="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-brand text-brand-foreground shadow-soft mb-4">
+            <PlusCircle className="h-7 w-7" />
           </div>
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+            Add New Expense
+          </h2>
+          <p className="text-muted-foreground text-base">
+            Record your spending in seconds. All fields are required.
+          </p>
         </div>
-        <div className="space-y-2">
-          <Label>Category</Label>
-          <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
-            <SelectTrigger className="h-11 rounded-xl">
-              <SelectValue placeholder="Select a category" />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label>Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full h-11 rounded-xl justify-start text-left font-normal",
-                  !date && "text-muted-foreground",
-                )}
-              >
-                <CalendarIcon className="h-4 w-4" />
-                {date ? format(date, "PPP") : "Pick a date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                initialFocus
-                className={cn("p-3 pointer-events-auto")}
+
+        {/* Form Card */}
+        <div className="rounded-2xl bg-card border border-border shadow-soft p-8 backdrop-blur-sm animate-slide-up">
+          <form onSubmit={submit} className="space-y-8">
+            {/* Amount Field */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-gradient-brand/10 flex items-center justify-center">
+                  <Banknote className="h-4 w-4 text-primary" />
+                </div>
+                <Label htmlFor="amount" className="text-base font-semibold">
+                  Amount
+                </Label>
+              </div>
+              <div className="relative group">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-lg">
+                  ₹
+                </span>
+                <Input
+                  id="amount"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="pl-9 h-12 rounded-xl border-border focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all bg-background/50"
+                />
+              </div>
+            </div>
+
+            {/* Category & Date Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Category Field */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-brand/10 flex items-center justify-center">
+                    <Tag className="h-4 w-4 text-primary" />
+                  </div>
+                  <Label className="text-base font-semibold">Category</Label>
+                </div>
+                <Select value={category} onValueChange={(v) => setCategory(v as Category)}>
+                  <SelectTrigger className="h-12 rounded-xl border-border focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all bg-background/50">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date Field */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-gradient-brand/10 flex items-center justify-center">
+                    <CalendarIcon className="h-4 w-4 text-primary" />
+                  </div>
+                  <Label className="text-base font-semibold">Date</Label>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full h-12 rounded-xl justify-start text-left font-normal border-border focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all bg-background/50",
+                        !date && "text-muted-foreground",
+                      )}
+                    >
+                      <CalendarIcon className="h-4 w-4 mr-2" />
+                      {date ? format(date, "MMM dd, yyyy") : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* Description Field */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-lg bg-gradient-brand/10 flex items-center justify-center">
+                  <FileText className="h-4 w-4 text-primary" />
+                </div>
+                <Label htmlFor="desc" className="text-base font-semibold">
+                  Description
+                </Label>
+              </div>
+              <Textarea
+                id="desc"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="What was this expense for? (optional)"
+                className="rounded-xl min-h-[100px] border-border focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all bg-background/50 resize-none"
               />
-            </PopoverContent>
-          </Popover>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl bg-gradient-brand text-brand-foreground font-semibold shadow-soft hover:shadow-lift hover:-translate-y-0.5 transition-all duration-300 text-base"
+              >
+                <PlusCircle className="h-5 w-5 mr-2" />
+                Add Expense
+              </Button>
+            </div>
+
+            {/* Helper Text */}
+            <p className="text-xs text-muted-foreground text-center">
+              Your expense will be saved and synced to your account immediately.
+            </p>
+          </form>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="desc">Description</Label>
-          <Textarea
-            id="desc"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="What was this for?"
-            className="rounded-xl min-h-[88px]"
-          />
-        </div>
-        <Button
-          type="submit"
-          className="w-full h-11 rounded-xl bg-gradient-brand text-brand-foreground shadow-soft hover:shadow-lift transition-shadow"
-        >
-          <PlusCircle className="h-4 w-4" />
-          Add Expense
-        </Button>
-      </form>
+      </div>
     </div>
   );
 }

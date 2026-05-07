@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AlertTriangle, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,27 @@ import { cn } from "@/lib/utils";
 
 export function BudgetCard({ spent }: { spent: number }) {
   const [budget, setBudget] = useState(2000);
-  const [draft, setDraft] = useState(String(budget));
+  const [draft, setDraft] = useState(String(2000));
+
+  useEffect(() => {
+    const savedBudget = window.localStorage.getItem("expenselens-budget");
+    if (!savedBudget) return;
+
+    const parsedBudget = Number(savedBudget);
+    if (Number.isFinite(parsedBudget) && parsedBudget > 0) {
+      setBudget(parsedBudget);
+      setDraft(String(parsedBudget));
+    }
+  }, []);
+
+  const updateBudget = () => {
+    const parsedBudget = parseFloat(draft);
+    const nextBudget = Number.isFinite(parsedBudget) && parsedBudget > 0 ? parsedBudget : 0;
+    setBudget(nextBudget);
+    setDraft(String(nextBudget));
+    window.localStorage.setItem("expenselens-budget", String(nextBudget));
+  };
+
   const pct = Math.min(100, Math.round((spent / budget) * 100));
   const remaining = budget - spent;
   const exceeded = remaining < 0;
@@ -81,7 +101,7 @@ export function BudgetCard({ spent }: { spent: number }) {
           placeholder="Update budget"
         />
         <Button
-          onClick={() => setBudget(parseFloat(draft) || 0)}
+          onClick={updateBudget}
           className="h-10 rounded-xl bg-gradient-brand text-brand-foreground"
         >
           Update

@@ -40,6 +40,14 @@ function ChartCard({
   );
 }
 
+function EmptyChartState({ message }: { message: string }) {
+  return (
+    <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border bg-muted/20 px-6 text-center">
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  );
+}
+
 export function CategoryPie({ expenses }: { expenses: Expense[] }) {
   const data = useMemo(() => {
     return CATEGORIES.map((c) => ({
@@ -47,6 +55,14 @@ export function CategoryPie({ expenses }: { expenses: Expense[] }) {
       value: expenses.filter((e) => e.category === c).reduce((s, e) => s + e.amount, 0),
     })).filter((d) => d.value > 0);
   }, [expenses]);
+
+  if (data.length === 0) {
+    return (
+      <ChartCard title="Spending by Category" subtitle="Where your money goes">
+        <EmptyChartState message="No expense data yet." />
+      </ChartCard>
+    );
+  }
 
   return (
     <ChartCard title="Spending by Category" subtitle="Where your money goes">
@@ -82,6 +98,8 @@ export function CategoryPie({ expenses }: { expenses: Expense[] }) {
 
 export function MonthlyBar({ expenses }: { expenses: Expense[] }) {
   const data = useMemo(() => {
+    if (expenses.length === 0) return [];
+
     const map = new Map<string, number>();
     expenses.forEach((e) => {
       const d = new Date(e.date);
@@ -92,9 +110,17 @@ export function MonthlyBar({ expenses }: { expenses: Expense[] }) {
     const now = new Date().getMonth();
     return Array.from({ length: 6 }).map((_, i) => {
       const m = months[(now - 5 + i + 12) % 12];
-      return { month: m, amount: map.get(m) ?? Math.round(80 + Math.random() * 350) };
+      return { month: m, amount: map.get(m) ?? 0 };
     });
   }, [expenses]);
+
+  if (data.length === 0) {
+    return (
+      <ChartCard title="Monthly Spending" subtitle="Last 6 months">
+        <EmptyChartState message="No expense data yet." />
+      </ChartCard>
+    );
+  }
 
   return (
     <ChartCard title="Monthly Spending" subtitle="Last 6 months">
@@ -128,6 +154,8 @@ export function MonthlyBar({ expenses }: { expenses: Expense[] }) {
 
 export function TrendLine({ expenses }: { expenses: Expense[] }) {
   const data = useMemo(() => {
+    if (expenses.length === 0) return [];
+
     const days = 14;
     return Array.from({ length: days }).map((_, i) => {
       const day = new Date();
@@ -137,13 +165,21 @@ export function TrendLine({ expenses }: { expenses: Expense[] }) {
         .reduce((s, e) => s + e.amount, 0);
       return {
         day: day.toLocaleDateString("en-US", { day: "2-digit", month: "short" }),
-        amount: total || Math.round(10 + Math.random() * 80),
+        amount: total,
       };
     });
   }, [expenses]);
 
+  if (data.length === 0) {
+    return (
+      <ChartCard title="Expense Trend" subtitle="Daily spending over the last 14 days">
+        <EmptyChartState message="No expense data yet." />
+      </ChartCard>
+    );
+  }
+
   return (
-    <ChartCard title="Expense Trend" subtitle="Daily spending over the last 14 days" className="lg:col-span-2">
+    <ChartCard title="Expense Trend" subtitle="Daily spending over the last 14 days">
       <ResponsiveContainer>
         <LineChart data={data}>
           <defs>

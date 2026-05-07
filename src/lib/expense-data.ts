@@ -58,4 +58,4 @@ export const CATEGORY_COLORS: Record<Category, string> = {
 };
 
 export const formatCurrency = (n: number) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(n);
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(n);

@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import logoUrl from "@/components/ui/expenselens.png";
 
 function NotFoundComponent() {
   return (
@@ -72,10 +73,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Pennywise — Personal Expense Tracker & Reports" },
+      { title: "ExpenseLens — Personal Expense Tracker & Reports" },
       { name: "description", content: "Track expenses, manage budgets, and visualize spending with a modern fintech dashboard." },
-      { name: "author", content: "Pennywise" },
-      { property: "og:title", content: "Pennywise — Personal Expense Tracker" },
+      { name: "author", content: "ExpenseLens" },
+      { property: "og:title", content: "ExpenseLens — Personal Expense Tracker" },
       { property: "og:description", content: "Track expenses, manage budgets, and visualize spending." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -85,6 +86,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        href: logoUrl,
       },
     ],
   }),

@@ -42,7 +42,8 @@ export function TransactionTable({
           />
         </div>
       </div>
-      <div className="overflow-x-auto">
+      {/* Desktop table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
@@ -106,6 +107,53 @@ export function TransactionTable({
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile stacked list */}
+      <div className="md:hidden px-4 py-3 space-y-3">
+        {filtered.length === 0 && (
+          <div className="text-center text-muted-foreground text-sm py-6">No transactions found.</div>
+        )}
+        {filtered.map((e) => (
+          <div key={e.id} className="rounded-xl bg-background/60 border border-border p-3 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="text-xs text-muted-foreground">{format(new Date(e.date), "MMM d, yyyy")}</div>
+                <div className="mt-1 font-semibold text-foreground">{e.description}</div>
+                <div className="mt-2">
+                  <Badge
+                    variant="secondary"
+                    className="rounded-full font-medium text-xs"
+                    style={{
+                      background: `color-mix(in oklab, ${CATEGORY_COLORS[e.category]} 18%, transparent)`,
+                      color: CATEGORY_COLORS[e.category],
+                    }}
+                  >
+                    {e.category}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <div className="text-sm font-semibold">{formatCurrency(e.amount)}</div>
+                {onDelete && (
+                  <div className="inline-flex gap-2">
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      onClick={() => onDelete(e.id)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
